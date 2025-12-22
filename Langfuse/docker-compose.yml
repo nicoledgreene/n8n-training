@@ -15,7 +15,7 @@ services:
         - LANGFUSE_ENABLE_EXPERIMENTAL_FEATURES=${LANGFUSE_ENABLE_EXPERIMENTAL_FEATURES:-true}
 
   pg-langfuse:
-    image: postgres
+    image: postgres:16
     restart: always
     command: postgres -p 5433
     healthcheck:
