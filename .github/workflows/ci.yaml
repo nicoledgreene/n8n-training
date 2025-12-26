@@ -1,0 +1,27 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up environment
+        run: |
+          echo "Running CI on commit $GITHUB_SHA"
+
+      - name: Run tests
+        run: |
+          echo "Add your test command here"
+          # Example:
+          # npm test
+          # pytest
+          # go test ./...
