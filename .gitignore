@@ -12,3 +12,5 @@
 .cache
 
 doc
+.env
+n8n-data
