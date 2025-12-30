@@ -9,6 +9,10 @@ export PORT
 export N8N_PORT="$PORT"
 export N8N_HOST="0.0.0.0"
 
+# Default to plain HTTP so Render's health/port scan detects the service
+: "${N8N_PROTOCOL:=http}"
+export N8N_PROTOCOL
+
 # If you want https, N8N_PROTOCOL/N8N_SSL_KEY/N8N_SSL_CERT are already set in the Dockerfile
 
 # Exec n8n so signals are forwarded correctly

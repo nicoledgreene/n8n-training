@@ -22,10 +22,8 @@ RUN openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
 # Set proper permissions for the private key
 RUN chmod 600 /home/node/certificates/n8n-key.pem
 
-# Set environment variables for SSL configuration
-ENV N8N_PROTOCOL=https
-ENV N8N_SSL_KEY=/home/node/certificates/n8n-key.pem
-ENV N8N_SSL_CERT=/home/node/certificates/n8n-cert.pem
+# Set default protocol to http
+ENV N8N_PROTOCOL=http
 
 # Expose the default n8n HTTP port so Render's port scanner can see it
 EXPOSE 5678
