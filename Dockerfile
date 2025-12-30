@@ -27,5 +27,15 @@ ENV N8N_PROTOCOL=https
 ENV N8N_SSL_KEY=/home/node/certificates/n8n-key.pem
 ENV N8N_SSL_CERT=/home/node/certificates/n8n-cert.pem
 
+# Expose the default n8n HTTP port so Render's port scanner can see it
+EXPOSE 5678
+
+# Copy startup script that honors the $PORT Render provides and starts n8n
+COPY --chown=node:node docker-entrypoint/start-n8n.sh /home/node/start-n8n.sh
+RUN chmod +x /home/node/start-n8n.sh
+
+# Use the entrypoint script which will set PORT/N8N_PORT/N8N_HOST and exec n8n
+ENTRYPOINT ["/home/node/start-n8n.sh"]
+
 # You can set a custom entrypoint here to check the certificate files before starting n8n
 # or use the default one provided by the base image
