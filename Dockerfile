@@ -4,13 +4,8 @@ FROM node:20-alpine AS customnodebuilder
 WORKDIR /build/n8n-custom
 COPY n8n-custom/ ./
 
-# If your custom node is TypeScript, this should create dist/
-RUN npm ci
-RUN npm run build
-
-# Pack into a tarball so we can install cleanly in the final image
+RUN if [ -f package-lock.json ]; then npm ci; else npm install; fi
 RUN npm pack
-
 
 # -------- Stage 2: your current n8n image --------
 FROM bitovi/n8n-community-nodes:latest
