@@ -1,17 +1,11 @@
 {
-  "name": "n8n-custom",
+  "name": "n8n-nodes-github-action-error",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "custom/nodes/GitHubActionError.node.js",
+  "keywords": ["n8n-community-node-package"],
   "n8n": {
-    "nodes": ["nodes/GitHubActionError.node.js"]
+    "nodes": ["custom/nodes/GitHubActionError.node.js"]
   },
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "description": "",
   "dependencies": {
     "axios": "^1.13.2",
     "n8n-workflow": "^2.2.1"

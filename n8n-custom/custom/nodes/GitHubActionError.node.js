@@ -1,10 +1,7 @@
-const { INodeType, INodeTypeDescription } = require("n8n-workflow");
-
 class GitHubActionError {
   description = {
     displayName: "GitHub Action Error",
     name: "gitHubActionError",
-    icon: "file:github.svg",
     group: ["transform"],
     version: 1,
     description:
@@ -20,10 +17,7 @@ class GitHubActionError {
         name: "githubApiToken",
         type: "string",
         default: "",
-        typeOptions: {
-          password: true,
-        },
-        description: "Personal access token for GitHub API authentication",
+        typeOptions: { password: true },
         required: true,
       },
       {
@@ -31,7 +25,6 @@ class GitHubActionError {
         name: "owner",
         type: "string",
         default: "",
-        description: "GitHub repository owner",
         required: true,
       },
       {
@@ -39,7 +32,6 @@ class GitHubActionError {
         name: "repo",
         type: "string",
         default: "",
-        description: "GitHub repository name",
         required: true,
       },
       {
@@ -47,7 +39,6 @@ class GitHubActionError {
         name: "runId",
         type: "string",
         default: "",
-        description: "The ID of the workflow run",
         required: true,
       },
     ],
@@ -64,38 +55,27 @@ class GitHubActionError {
         const repo = this.getNodeParameter("repo", i);
         const runId = this.getNodeParameter("runId", i);
 
-        // Set up GitHub API request
         const options = {
           method: "GET",
-          url: `<https://api.github.com/repos/${owner}/${repo}/actions/runs/${runId}/logs>`,
+          url: `https://api.github.com/repos/${owner}/${repo}/actions/runs/${runId}/logs`,
           headers: {
             "User-Agent": "n8n",
             Authorization: `token ${githubApiToken}`,
-            Accept: "application/vnd.github.v3+json",
+            Accept: "application/vnd.github+json",
           },
-          encoding: null, // Required to download as binary
+          encoding: null,
         };
 
-        // Fetch logs
         const response = await this.helpers.request(options);
 
-        // Process logs (assuming logs are in a ZIP file)
-        // Extract error messages from logs (implementation depends on log format)
-
-        // For demonstration, let's assume we have extracted an error message
+        // TODO: unzip + parse response (it's a ZIP)
         const errorMessage = "Sample error message from logs";
 
-        // Search for possible fixes (e.g., using an AI model or API)
-        // Placeholder for actual implementation
-        const suggestions = [
-          {
+        returnData.push({
+          json: {
             error: errorMessage,
             suggestion: "Possible fix for the error.",
           },
-        ];
-
-        returnData.push({
-          json: suggestions[0],
         });
       } catch (error) {
         if (this.continueOnFail()) {
