@@ -14,7 +14,6 @@
   "description": "",
   "dependencies": {
     "axios": "^1.13.2",
-    "n8n-workflow": "^2.2.1",
-    "n8n-nodes-github-action-error": "file:./n8n-custom/custom/nodes/GitHubActionError"
+    "n8n-workflow": "^2.2.1"
   }
 }
