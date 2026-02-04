@@ -1,9 +1,31 @@
+# -------- Stage 1: build your custom node --------
+FROM node:20-alpine AS customnodebuilder
+
+WORKDIR /build/n8n-custom
+COPY n8n-custom/ ./
+
+# If your custom node is TypeScript, this should create dist/
+RUN npm ci
+RUN npm run build
+
+# Pack into a tarball so we can install cleanly in the final image
+RUN npm pack
+
+
+# -------- Stage 2: your current n8n image --------
 FROM bitovi/n8n-community-nodes:latest
 
 USER root
 
 # Install bash and OpenSSL for certificate generation
 RUN apk update && apk add --no-cache bash openssl
+
+# --- Install your custom node globally into the n8n runtime ---
+COPY --from=customnodebuilder /build/n8n-custom/*.tgz /tmp/custom-node.tgz
+RUN npm install -g /tmp/custom-node.tgz && rm -f /tmp/custom-node.tgz
+
+# Make sure n8n will load community packages
+ENV N8N_COMMUNITY_PACKAGES_ENABLED=true
 
 # Set proper ownership for npm global directories
 RUN chown -R node:node /usr/local/lib /usr/local/bin
@@ -22,18 +44,12 @@ RUN openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
 # Set proper permissions for the private key
 RUN chmod 600 /home/node/certificates/n8n-key.pem
 
-# Set default protocol to http
+# Default protocol (Render env vars can override this at runtime)
 ENV N8N_PROTOCOL=http
 
-# Expose the default n8n HTTP port so Render's port scanner can see it
 EXPOSE 5678
 
-# Copy startup script that honors the $PORT Render provides and starts n8n
 COPY --chown=node:node docker-entrypoint/start-n8n.sh /home/node/start-n8n.sh
 RUN chmod +x /home/node/start-n8n.sh
 
-# Use the entrypoint script which will set PORT/N8N_PORT/N8N_HOST and exec n8n
 ENTRYPOINT ["/home/node/start-n8n.sh"]
-
-# You can set a custom entrypoint here to check the certificate files before starting n8n
-# or use the default one provided by the base image
