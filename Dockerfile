@@ -1,10 +1,12 @@
 # -------- Stage 1: build your custom node --------
 FROM node:20-alpine AS customnodebuilder
 
-WORKDIR /build/n8n-custom
-COPY n8n-custom/ ./
+WORKDIR /build/nodepkg
+COPY n8n-custom/custom/GitHubActionError/ ./
 
 RUN if [ -f package-lock.json ]; then npm ci; else npm install; fi
+
+# no build step unless this package has one
 RUN npm pack
 
 # -------- Stage 2: your current n8n image --------
@@ -20,8 +22,8 @@ COPY --from=customnodebuilder /build/n8n-custom/*.tgz /tmp/custom-node.tgz
 RUN npm install -g /tmp/custom-node.tgz && rm -f /tmp/custom-node.tgz
 
 RUN npm list -g --depth=0 | grep -i n8n
-RUN node -e "console.log('custom node installed:', !!require.resolve('n8n-nodes-github-action-error/package.json'))"
-RUN node -e "console.log(require('n8n-nodes-github-action-error/package.json'))"
+RUN node -e "console.log('custom node installed:', !!require.resolve('n8n-custom/package.json'))"
+RUN node -e "console.log(require('n8n-custom/package.json'))"
 
 # Make sure n8n will load community packages
 ENV N8N_COMMUNITY_PACKAGES_ENABLED=true

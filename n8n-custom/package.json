@@ -2,6 +2,9 @@
   "name": "n8n-custom",
   "version": "1.0.0",
   "main": "index.js",
+  "n8n": {
+    "nodes": ["nodes/GitHubActionError.node.js"]
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
