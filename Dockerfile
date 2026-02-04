@@ -19,6 +19,10 @@ RUN apk update && apk add --no-cache bash openssl
 COPY --from=customnodebuilder /build/n8n-custom/*.tgz /tmp/custom-node.tgz
 RUN npm install -g /tmp/custom-node.tgz && rm -f /tmp/custom-node.tgz
 
+RUN npm list -g --depth=0 | grep -i n8n
+RUN node -e "console.log('custom node installed:', !!require.resolve('n8n-nodes-github-action-error/package.json'))"
+RUN node -e "console.log(require('n8n-nodes-github-action-error/package.json'))"
+
 # Make sure n8n will load community packages
 ENV N8N_COMMUNITY_PACKAGES_ENABLED=true
 
