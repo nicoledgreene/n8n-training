@@ -7,6 +7,7 @@ RUN apk update && apk add --no-cache bash openssl
 # Install your custom node package globally
 COPY n8n-custom/ /tmp/n8n-custom/
 RUN npm install -g /tmp/n8n-custom && rm -rf /tmp/n8n-custom
+RUN find /usr/local/lib/node_modules/n8n-nodes-github-action-error -maxdepth 4 -type f
 RUN node -e "require('/usr/local/lib/node_modules/n8n-nodes-github-action-error/custom/nodes/GitHubActionError.node.js'); console.log('node loads')"
 
 ENV N8N_COMMUNITY_PACKAGES_ENABLED=true
