@@ -3,14 +3,12 @@ FROM bitovi/n8n-community-nodes:latest
 USER root
 RUN apk update && apk add --no-cache bash openssl
 
-# Put custom node where n8n will load it from
+# Put your custom node where n8n will load it from
 RUN mkdir -p /home/node/custom-nodes/nodes
 COPY n8n-custom/custom/nodes/GitHubActionError.node.js /home/node/custom-nodes/nodes/GitHubActionError.node.js
 
-# Fail build if missing
+# Fail build if missing / not loadable
 RUN test -f /home/node/custom-nodes/nodes/GitHubActionError.node.js
-
-# Fail build if node file can't be required
 RUN node -e "require('/home/node/custom-nodes/nodes/GitHubActionError.node.js'); console.log('Custom node file loads');"
 
 # Tell n8n to load custom nodes from this folder
@@ -27,6 +25,3 @@ EXPOSE 5678
 RUN chown -R node:node /home/node/custom-nodes
 
 USER node
-
-# Explicitly start n8n
-CMD ["n8n", "start"]
