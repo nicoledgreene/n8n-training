@@ -1,38 +1,21 @@
 FROM bitovi/n8n-community-nodes:latest
 
 USER root
-
 RUN apk update && apk add --no-cache bash openssl
 
-# Install your custom node package globally
-COPY n8n-custom/ /tmp/n8n-custom/
-RUN npm config set prefix /usr/local \
-    && npm install -g /tmp/n8n-custom \
-    && rm -rf /tmp/n8n-custom
+# Put your custom node where n8n will load it from
+RUN mkdir -p /home/node/custom-nodes/nodes
+COPY n8n-custom/custom/nodes/ /home/node/custom-nodes/nodes/
 
-# Debug
-RUN echo "npm prefix -g: $(npm prefix -g)" \
-    && echo "npm root -g: $(npm root -g)" \
-    && npm list -g --depth=0 || true
-
-# Confirm Node can resolve the installed package
-RUN node -e "try{console.log('pkg:', require('n8n-nodes-github-action-error/package.json').name)}catch(e){console.log('NOT resolvable:', e.message)}"
-
+# Tell n8n to load nodes from this folder
+ENV N8N_CUSTOM_EXTENSIONS=/home/node/custom-nodes
 ENV N8N_COMMUNITY_PACKAGES_ENABLED=true
 
-RUN chown -R node:node /usr/local/lib /usr/local/bin
+# (Render port binding safety)
+ENV N8N_PROTOCOL=http
+ENV N8N_LISTEN_ADDRESS=0.0.0.0
+EXPOSE 5678
+
+RUN chown -R node:node /home/node/custom-nodes
 
 USER node
-
-RUN mkdir -p /home/node/certificates
-WORKDIR /home/node/certificates
-
-RUN openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
-    -keyout n8n-key.pem -out n8n-cert.pem \
-    -subj "/C=US/ST=State/L=City/O=Organization/CN=localhost"
-
-RUN chmod 600 /home/node/certificates/n8n-key.pem
-
-ENV N8N_PROTOCOL=https
-ENV N8N_SSL_KEY=/home/node/certificates/n8n-key.pem
-ENV N8N_SSL_CERT=/home/node/certificates/n8n-cert.pem
